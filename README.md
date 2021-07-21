@@ -22,8 +22,7 @@
 * GISJOIN = 2000 Census Tract\
 * HU2000_00 = 2000 HU counts from 2000 census\
 * HU90_00 = 1990 HU counts from 2000 census [YSB: “built before 1940” + “built 1940-1949” + ,,, + ”built 1980-1989”]\
-* stay = indicator of whether tract is in 2/3 that stay or 1/3 that get removed\
-Y indicates tract is 2/3 that stays\
+* stay = indicator of whether tract is in 2/3 that stay or 1/3 that get removed(Y indicates tract is 2/3 that stays)\
 
 
 #### SHAPEFILE 3

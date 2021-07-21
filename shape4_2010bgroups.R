@@ -43,10 +43,8 @@ final_10bg_sf
 # HU1990_10: 1990 HU (NHGIS normalized to 2010 BGs)
 # HU2000_10: 2000 HU (NHGIS normalized to 2010 BGs)
 
-## TO DO LIST
-# refine code
-# write file
-
+##--------------------------------------------------------------------------------------
+# write shapefile
 # st_write(final_10bg_sf, dsn = "shapes/bgroups_2010/shp4_bgs10.shp", layer = "shp4_bgs10.shp", driver = "ESRI Shapefile") # , append = FALSE
 
 

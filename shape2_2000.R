@@ -74,14 +74,9 @@ final_00_sf
            # Y indicates tract is 2/3 that stays
 
 
-## TO Do LIST
-# refine code above
+##--------------------------------------------------------------------------------------
 # write file
-# write csv of total tracts (90, 00, 10) and block groups (2010) in each county
-# write_csv(county_sub_geogs_total, "county_sub_geogs_total.csv")
-
-
-st_write(final_00_sf, dsn = "shapes/tracts_2000/shp2_tracts00.shp", layer = "shp2_tracts00.shp", driver = "ESRI Shapefile") #, append = FALSE)
+# st_write(final_00_sf, dsn = "shapes/tracts_2000/shp2_tracts00.shp", layer = "shp2_tracts00.shp", driver = "ESRI Shapefile") #, append = FALSE)
 
 
 

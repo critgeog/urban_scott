@@ -9,14 +9,14 @@ scripts:
 shapes:
 
 *SHAPEFILE 1*
-final_10_sf
-<metadata>
-GISJOIN: 2010 GISJOIN code (from NHGIS)
-HU2010: 2010 HU from 2010 Census
-HU2000_10ts: 2000 HU (NHGIS normalized to 2010 tracts)
-HU1900_10ts: 1990 HU (NHGIS normalized to 2010 tracts)
-ham_est00: Hammer estimates for 2000 using 2010 YSB tract data [“built before 1940” + “built 1940-1949” + “built 1950 + 1959” + ,,, + ”built 1990-1999”] & 2000 county HU counts data
-ham_est90: Hammer estimates for 1990 using 2010 YSB data & 1990 county HU counts data
+final_10_sf\
+<metadata>\
+GISJOIN: 2010 GISJOIN code (from NHGIS)\
+HU2010: 2010 HU from 2010 Census\
+HU2000_10ts: 2000 HU (NHGIS normalized to 2010 tracts)\
+HU1900_10ts: 1990 HU (NHGIS normalized to 2010 tracts)\
+ham_est00: Hammer estimates for 2000 using 2010 YSB tract data [“built before 1940” + “built 1940-1949” + “built 1950 + 1959” + ,,, + ”built 1990-1999”] & 2000 county HU counts data\
+ham_est90: Hammer estimates for 1990 using 2010 YSB data & 1990 county HU counts data\
 
 *SHAPEFILE 2*
 final_00_sf 

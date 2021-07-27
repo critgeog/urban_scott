@@ -1,0 +1,7 @@
+*.gdb filter=lfs diff=lfs merge=lfs -text
+*.gdtable filter=lfs diff=lfs merge=lfs -text
+*.shp filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.dbf filter=lfs diff=lfs merge=lfs -text
+*.spx filter=lfs diff=lfs merge=lfs -text
+*.gdbtable filter=lfs diff=lfs merge=lfs -text

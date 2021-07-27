@@ -37,3 +37,13 @@ stay = indicator of whether tract is in 1/3 that stay or 2/3 that get removed (Y
 * GISJOIN: 2010 BGs code from NHGIS\
 * HU1990_10: 1990 HU (NHGIS normalized to 2010 BGs)\
 * HU2000_10: 2000 HU (NHGIS normalized to 2010 BGs)\
+
+
+
+[Installing Git Large File Storage](https://docs.github.com/en/github/managing-large-files/versioning-large-files/installing-git-large-file-storage)
+
+[Configuring Git Large File Storage](https://docs.github.com/en/github/managing-large-files/versioning-large-files/configuring-git-large-file-storage)
+
+[Failing to Push Large Files](https://github.com/git-lfs/git-lfs/issues/1933#issuecomment-351275765)
+
+[Git LFS 2.2.0 released](https://github.blog/2017-06-27-git-lfs-2-2-0-released/)

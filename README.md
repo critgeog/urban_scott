@@ -49,3 +49,10 @@ stay = indicator of whether tract is in 1/3 that stay or 2/3 that get removed (Y
 
 [Failing to Push Large Files](https://github.com/git-lfs/git-lfs/issues/1933#issuecomment-351275765)
 
+key steps
+git lfs track “*.gdbtable”
+git lfs track “*.gdb”
+git lfs track “*.csv”
+git add HHUUD_shp.gdb
+git commit -m “add gdb”
+git push

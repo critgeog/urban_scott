@@ -52,7 +52,27 @@
 * HU 1990: Housing Units built before 1990 from 2006-10 ACS YSB
 * stay: indicator of whether tract is in the 3/4 that stay or the 1/4 that get removed
 
-## Git LFS Resources
+
+### A note on the nine Counties selected
+Our selection of nine counties includes three groups of three counties. The three groups exhibit patterns of housing unit decline, stability, and growth between 1990 and 2015-19 ACS. 
+
+* 'Decline' group includes: Orleans Parish, LA; St. Louis, MO; and Wayne County, MI
+* 'Stable' group includes: Allegheny County, PA; Hamilton, OH; and Essex County, NJ
+* 'Growth' group includes: Orange County, FL; Riverside County, CA; and Tarrant County, TX
+
+According to the 1990 Census, these three groups have an average of 417,734, 413,623.0, 419,228.3 housing units, respectively. Conversely, according to the 2015-19 ACS, these three groups have an average of 394,546, 432,371, 714,763 housing units, respectively. Raw data is [here](insert link). A complete record of housing unit totals for all counties between 1990 and 2015-19 is [here](insert link)
+
+
+##### steps to upload gdbtable via command line
+git lfs track “*.gdbtable”\
+git lfs track “*.gdb”\
+git lfs track “*.csv”\
+git add HHUUD_shp.gdb\
+git commit -m “add gdb”\
+git push
+
+
+#### Git LFS Resources
 
 [Git LFS 2.2.0 released](https://github.blog/2017-06-27-git-lfs-2-2-0-released/)
 
@@ -61,11 +81,3 @@
 [Configuring Git Large File Storage](https://docs.github.com/en/github/managing-large-files/versioning-large-files/configuring-git-large-file-storage)
 
 [Failing to Push Large Files](https://github.com/git-lfs/git-lfs/issues/1933#issuecomment-351275765)
-
-##### steps\
-git lfs track “*.gdbtable”\
-git lfs track “*.gdb”\
-git lfs track “*.csv”\
-git add HHUUD_shp.gdb\
-git commit -m “add gdb”\
-git push

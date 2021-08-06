@@ -1,11 +1,11 @@
-## Data Validation Files for HHUDB
+# Data Validation Files for HHUDB
 [More Information on the Historical Housing and Urbanization Database](https://github.com/snmarkley1/HIST_HU_URB)
 
-### Organization
-`scripts`: Folder contains scripts required to create the shapefiles.
+## Organization
+`scripts`: Folder contains scripts required to create the shapefiles.\
 `shapefiles`: Folder contains four shapefiles described below
 
-#### County Validation Selection
+### County Validation Selection
 Our selection of nine counties includes three groups of three counties. The three groups exhibit patterns of housing unit decline, stability, and growth between 1990 and 2015-19 ACS. 
 
 * 'Decline' group includes: Orleans Parish, LA; St. Louis, MO; and Wayne County, MI
@@ -52,7 +52,7 @@ According to the 1990 Census, these three groups have an average of 417,734, 413
 * stay: indicator of whether tract is in the 3/4 that stay or the 1/4 that get removed
 
 
-### Miscellaneous
+## Miscellaneous
 
 #### steps to upload gdbtable via command line
 git lfs track “*.gdbtable”\

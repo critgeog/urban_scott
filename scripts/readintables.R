@@ -177,7 +177,7 @@ ysb19 <- ysb19 %>%
 # count hu 90 and hu00 for Hammer estimate
 
 ## write
-write_csv(ysb19, "tables/ysb19.csv")
+write_csv(ysb19, "tables/tracts1519.csv")
 
 ##--------------------------------------------------------------------------------------
 # 2006-10
@@ -193,13 +193,13 @@ ysb2010 <- ysb0610_table %>%
 # Sum 2000 and 1990 housing units from YSB columns in 2006-10 ACS
 ysb10 <- ysb2010 %>%
   mutate(
-    HU_2000 = (JSDE005+JSDE006+JSDE007+JSDE008+JSDE009+JSDE010),      # YSB Built 1939 or earlier + ... + YSB Built 1980-1989
-    HU_1990 = (JSDE004+JSDE005+JSDE006+JSDE007+JSDE008+JSDE009+JSDE010), # YSB Built 1939 or earlier + ... + YSB Built 1990-1999
+    ysb1990 = (JSDE005+JSDE006+JSDE007+JSDE008+JSDE009+JSDE010),      # YSB Built 1939 or earlier + ... + YSB Built 1980-1989
+    ysb2000 = (JSDE004+JSDE005+JSDE006+JSDE007+JSDE008+JSDE009+JSDE010), # YSB Built 1939 or earlier + ... + YSB Built 1990-1999
   ) %>%
   select(GISJOIN, HU2006_10, HU_2000, HU_1990)
 
 ## write
-write_csv(ysb10, "tables/ysb10.csv")
+write_csv(ysb10, "tables/tracts0610.csv")
 
 
 ##--------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ tract_ysb2000 <- ysb00_table %>%
 tracts_2000 <- left_join(tract_hu2000, tract_ysb2000)
 
 ## write
-write_csv(tracts_2000, "tables/tracts_2000.csv")
+write_csv(tracts_2000, "tables/tracts00.csv")
 
 ##--------------------------------------------------------------------------------------
 ## Read in NHGIS Housing Unit and YSB Data, 1990
@@ -236,7 +236,7 @@ tracts_hu1990 <- hu90_table %>%
   select(GISJOIN,HU1990_90)
 
 ## write
-write_csv(tracts_hu1990, "tables/tracts_hu2000.csv")
+write_csv(tracts_hu1990, "tables/tracts90.csv")
 
 
 ##--------------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ ts_2010  <- ct10ts_table %>%
   select(GISJOIN, hu1990_10ts, hu2000_10ts)
 
 ## write
-write_csv(ts_2010, "tables/ts_2010.csv")
+write_csv(ts_2010, "tables/tracts_ts2010.csv")
 
 
 

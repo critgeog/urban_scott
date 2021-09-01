@@ -93,7 +93,7 @@ tracts10_sf <- cts10 %>%
 final1519_sf <- left_join(tracts10_sf,tracts_ham_est)
 
 # # write shapefile
-st_write(final1519_sf, dsn = "shapes/tracts_2019/", layer = "shp1_tracts1519.shp", driver = "ESRI Shapefile", append = TRUE)
+st_write(final1519_sf, dsn = "gis_files/tracts_2019/", layer = "shp1_tracts1519.shp", driver = "ESRI Shapefile", append = TRUE)
 
 rm(cts10, tracts1519, tracts15195s_county, tracts1519ts, tracts_ts2010, county90_00, tracts_ham_est)
 
@@ -129,7 +129,7 @@ fct_count(final00_sf$stay) # 1/2 = Y
 final00_sf
 
 # write file
-st_write(final00_sf, dsn = "shapes/tracts_2000/", layer = "shp2_tracts00.shp", driver = "ESRI Shapefile", append = FALSE)
+st_write(final00_sf, dsn = "gis_files/tracts_2000/", layer = "shp2_tracts00.shp", driver = "ESRI Shapefile", append = FALSE)
 
 rm(remove_tracts_2000, cts00, tracts00, tracts00_sf, final00)
 ##--------------------------------------------------------------------------------------
@@ -163,7 +163,7 @@ final90_sf
 
 
 # write shapefile
-st_write(final90_sf, dsn = "shapes/tracts_1990/", layer = "shp3_tracts90.shp", driver = "ESRI Shapefile", append = FALSE) #,
+st_write(final90_sf, dsn = "gis_files/tracts_1990/", layer = "shp3_tracts90.shp", driver = "ESRI Shapefile", append = FALSE) #,
 
 rm(remove_tracts_1990, cts90, tracts90, tracts90_sf, final90)
 ##--------------------------------------------------------------------------------------
@@ -186,6 +186,6 @@ final0610_sf <- left_join(tracts10_sf,final0610)
 fct_count(final0610_sf$stay) ## 3/4 = Y 2052/2742 = 74.8%
 
 # write file
-st_write(final0610_sf, dsn = "shapes/tracts_2010/", layer = "shp5_tracts10.shp", driver = "ESRI Shapefile", append = TRUE)
+st_write(final0610_sf, dsn = "gis_files/tracts_2010/", layer = "shp5_tracts10.shp", driver = "ESRI Shapefile", append = TRUE)
 
 rm(tracts0610, final0610)

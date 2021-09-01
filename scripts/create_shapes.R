@@ -1,9 +1,29 @@
 ##--------------------------------------------------------------------------------------
-## create shapes
-
+## create_shapes.r
+## create five shapefiles used in data validation
+## Metadata for each file on README: https://github.com/critgeog/urban_scott
+## 
 ##--------------------------------------------------------------------------------------
+
+# load libraries
 library(tidyverse)
 library(tidycensus)
+library(tigris)
+options(tigris_use_cache = TRUE)
+options(tigris_class = 'sf')
+library(sf)
+# my_acs_key <- '45544f0d114cfaa037a5566745d18bb8d4778cfa'
+# my_acs_key <- 'YOUR KEY HERE'
+
+# county fips for NHGIS and Census Data Formats for nine  counties included in validation
+county_fips <- c("G2200710", "G2601630", "G2905100",  # decline: Orleans Parish(G2200710), Wayne County (G2601630), St. Louis city (G2905100),
+                 "G0600650", "G1200950","G4804390",   # growth: Riverside County(G0600650), Orange County (G1200950), Tarrant County (G4804390),
+                 "G3400130", "G3900610", "G4200030")  # stable: Essex County (G3400130), Hamilton County(G3900610), Allegheny County (G4200030)
+acs_county_fips <- c("22071", "26163", "29510", "06065", "12095","48439","34013", "39061", "42003")
+
+# State Fips and Abbreviations of nine counties in validation
+my_states <- c(22,26,29,06,12,48,34,39,42)
+state_codes <- c("LA", "MI", "MO", "CA", "FL", "TX", "NJ", "OH", "PA")
 
 
 ##--------------------------------------------------------------------------------------
@@ -28,7 +48,7 @@ remove_tracts_1990 <- read_csv("csv/tracts_1990_1_4_remove.csv") %>% # read in f
 ##--------------------------------------------------------------------------------------
 # shape 1
 
-# join 2006-10 ACS housing units
+# join 2006-10 ACS housing units to 2015-19 ACS census tract data
 tracts1519 <- tracts0610 %>%
   select(GISJOIN, HU2006_10) %>%
   left_join(.,tracts1519)
@@ -44,142 +64,127 @@ tracts_ham_est <- tracts15195s_county %>%
   group_by(COUNTYA) %>%
   mutate(
     j90 = sum(AL0DE006, AL0DE007, AL0DE008, AL0DE009, AL0DE010, AL0DE011), # sum of housing units built before 1989 in county j
-    # hmadj = (hu1990_cnty/j90),
     ham_est90 = (hu1990_cnty/j90) * hu_90,
     j00 = sum(AL0DE005, AL0DE006, AL0DE007, AL0DE008, AL0DE009, AL0DE010, AL0DE011), # housing units built before 1999 inin county j
-    # hamadj00 = (hu2000_cnty/j00),
     ham_est00 = (hu2000_cnty/j00) * hu_00
   ) %>%
   ungroup() %>%
   select(GISJOIN, HU2015_19, HU2006_10, hu1990_10ts, hu2000_10ts, hu1990_cnty, hu2000_cnty, ham_est90, ham_est00)
 
-tracts_ham_est
+# pull in census tracts from tigris for nine states included in validation
+cts10 <- map_dfr(
+  state_codes, 
+  ~tracts(
+    state = .x, 
+    cb = TRUE, 
+    year = 2018
+  )
+)
 
-# ## read in 2010 sf, tract
-# tract_2010_sf <- read_sf("../nhgis0086_shape/nhgis0086_shapefile_tl2010_us_tract_2010/US_tract_2010.shp") %>%
-#   mutate(COUNTYA = str_sub(GISJOIN,1,8)) %>%
-#   filter(COUNTYA %in% county_fips) %>%
-#   select(GISJOIN)
+# clean data, filter to nine counties, create GISJOIN variable to match NHGIS formatting
+tracts10_sf <- cts10 %>%
+  unite(COUNTYFIPS, STATEFP, COUNTYFP, sep = "") %>%
+  filter(COUNTYFIPS %in% acs_county_fips) %>%
+  mutate(GISJOIN = paste0("G",str_sub(GEOID,1,2),0,str_sub(GEOID,3,5),0,str_sub(GEOID,6,11))) %>%
+  select(GISJOIN)
 
-# # join spatial
-# final_10_sf <- left_join(tract_2010_sf,tracts_ham_est)
-# 
-# str(final_10_sf)
-# # Metadata
-# # GISJOIN: 2010 GISJOIN code (from NHGIS)
-# # HU2010: 2010 HU from 2010 Census
-# # HU2000_10ts: 2000 HU (NHGIS normalized to 2010 tracts)
-# # HU1900_10ts: 1990 HU (NHGIS normalized to 2010 tracts)
-# # ham_est00: Hammer estimates for 2000 using 2010 YSB tract data [“built before 1940” + “built 1940-1949” + “built 1950 + 1959” + ,,, + ”built 1990-1999”] & 2000 county HU counts data
-# # ham_est90: Hammer estimates for 1990 using 2010 YSB data & 1990 county HU counts data
-# 
-# ##--------------------------------------------------------------------------------------
+# join data for Shapefile 1 to spatial file
+final1519_sf <- left_join(tracts10_sf,tracts_ham_est)
+
 # # write shapefile
-# st_write(final_10_sf, dsn = "shapes/tracts_2019/", layer = "shp1_tracts19.shp", driver = "ESRI Shapefile")
+st_write(final1519_sf, dsn = "shapes/tracts_2019/", layer = "shp1_tracts1519.shp", driver = "ESRI Shapefile", append = TRUE)
 
-
-
+rm(cts10, tracts1519, tracts15195s_county, tracts1519ts, tracts_ts2010, county90_00, tracts_ham_est)
 
 ##--------------------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------
 # shape 2
 # join tract 'stay or remove' indicator to housing unit totals
-final_00 <- left_join(tracts00,remove_tracts_2000)
+final00 <- left_join(tracts00,remove_tracts_2000)
 
-# # read in 2000 CT spatial, sf
-# tract_2000_sf <- read_sf("../nhgis0085_shape/nhgis0085_shapefile_tl2000_us_tract_2000/US_tract_2000.shp") %>%
-#   mutate(COUNTYA = str_sub(GISJOIN,1,8)) %>%
-#   filter(COUNTYA %in% county_fips) %>%
-#   select(GISJOIN)
-# 
-# # join spatial
-# final_00_sf <- left_join(tract_2000_sf,final_00)
-# 
-# # 1/2 = Y
-# fct_count(final_00_sf$stay)
-# 
-# final_00_sf         
-# 
-# # metadata
-# # GISJOIN = 2000 Census Tract
-# # HU2000_00 = 2000 HU counts from 2000 census
-# # HU90_00 = 1990 HU counts from 2000 census [YSB: “built before 1940” + “built 1940-1949” + ,,, + ”built 1980-1989”]
-# # stay = indicator of whether tract is in 2/3 that stay or 1/3 that get removed
-# # Y indicates tract is 2/3 that stays
-# 
-# 
-# # write file
-# st_write(final_00_sf, dsn = "shapes/tracts_2000/", layer = "shp2_tracts00.shp", driver = "ESRI Shapefile", append = FALSE) 
+final00 <- final00 %>%
+  select(GISJOIN, HU2000_00, HU1990_00, stay)
 
+# pull in 2000 census tracts from tigris for nine states included in validation
+cts00 <- map_dfr(
+  state_codes, 
+  ~tracts(
+    state = .x, 
+    cb = TRUE, 
+    year = 2000
+  )
+)
 
+tracts00_sf <- cts00 %>%
+  unite(COUNTYFIPS, STATEFP, COUNTYFP, sep = "") %>%
+  filter(COUNTYFIPS %in% acs_county_fips) %>%
+  mutate(GISJOIN = paste0("G",STATE,0,COUNTY,0,TRACT)) %>%
+  select(GISJOIN)
+
+# join spatial
+final00_sf <- left_join(tracts00_sf,final00)
+
+fct_count(final00_sf$stay) # 1/2 = Y
+final00_sf
+
+# write file
+st_write(final00_sf, dsn = "shapes/tracts_2000/", layer = "shp2_tracts00.shp", driver = "ESRI Shapefile", append = FALSE)
+
+rm(remove_tracts_2000, cts00, tracts00, tracts00_sf, final00)
 ##--------------------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------
 # shape 3
 # join tract 'stay or remove' indicator to housing unit totals
-final_90 <- left_join(tracts90,remove_tracts_1990)
+final90 <- left_join(tracts90,remove_tracts_1990)
 
-# # read in 1990 CT spatial, sf
-# tract_1990_sf <- read_sf("../nhgis0084_shape/nhgis0084_shapefile_tl2000_us_tract_1990/US_tract_1990.shp") %>%
-#   mutate(COUNTYA = str_sub(GISJOIN,1,8)) %>%
-#   filter(COUNTYA %in% county_fips) %>%
-#   select(GISJOIN)
-# 
-# # join spatial
-# final_90_sf <- left_join(tract_1990_sf,final_90)
-# final_90_sf <- final_90_sf %>%
-#   select(GISJOIN, HU1990_90,stay,geometry)
-# 
-# final_90_sf
-# fct_count(final_90_sf$stay)
-# 1778/2375
-# 
-# # metadata
-# # GISJOIN = 1990 Census Tract
-# # HU1990_90 = 1990 HU counts from 1990 census
-# # stay = indicator of whether tract is in 1/3 that stay or 2/3 that get removed
-# # Y indicates tract is 1/3 that stays
-# 
-# # write shapefile
-# st_write(final_90_sf, dsn = "shapes/tracts_1990/", layer = "shp3_tracts90.shp", driver = "ESRI Shapefile", append = FALSE) #, 
+# pull in 1990 census tracts from tigris for nine states included in validation
+cts90 <- map_dfr(
+  state_codes, 
+  ~tracts(
+    state = .x, 
+    cb = TRUE, 
+    year = 1990
+  )
+)
+
+tracts90_sf <- cts90 %>%
+  unite(COUNTYFIPS, STATEFP, COUNTYFP, sep = "", remove = FALSE) %>%
+  filter(COUNTYFIPS %in% acs_county_fips) %>%
+  mutate(GISJOIN = '',
+         GISJOIN = ifelse(TRACTSUF== '00',paste0("G",STATEFP,0,COUNTYFP,0,TRACTBASE), paste0("G",STATEFP,0,COUNTYFP,0,TRACTBASE,TRACTSUF))) %>%
+  select(GISJOIN)
+
+# join spatial
+final90_sf <- left_join(tracts90_sf,final90)
+
+fct_count(final90_sf$stay)  # 1/4 stay; 2344 25.2%
+final90_sf
 
 
+# write shapefile
+st_write(final90_sf, dsn = "shapes/tracts_1990/", layer = "shp3_tracts90.shp", driver = "ESRI Shapefile", append = FALSE) #,
+
+rm(remove_tracts_1990, cts90, tracts90, tracts90_sf, final90)
+##--------------------------------------------------------------------------------------
+##--------------------------------------------------------------------------------------
 # shape 4
+
+
+
+
 
 ##--------------------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------
 # shape 5
 # join tract 'stay or remove' indicator to housing unit totals
-final_10 <- left_join(tracts_2010,remove_tracts_2010)
+final0610 <- left_join(tracts0610,remove_tracts_2010)
 
-
-
-
-
-# ## read in 2010 housing sf, tract
-# tract_2010_sf <- read_sf("../nhgis0086_shape/nhgis0086_shapefile_tl2010_us_tract_2010/US_tract_2010.shp") %>%
-#   mutate(COUNTYA = str_sub(GISJOIN,1,8)) %>%
-#   filter(COUNTYA %in% county_fips) %>%
-#   select(GISJOIN)
-# 
 # # join spatial
-# final_10_sf <- left_join(tract_2010_sf,final_10)
-# 
-# # 1/2 = Y
-# fct_count(final_10_sf$stay)
-# 
-# 2052/2742
-# 690/2742
-# 
-# # metadata
-# # GISJOIN = 2010 Census Tract
-# # HU2006_10 = 2006-10 ACS HU counts
-# # HU_2000 = 2000 Housing Units from 2006-10 ACS, Year Structure Built
-# # HU_1990 = 1990 Housing Units from 2006-10 ACS, Year Structure Built
-# # stay = indicator of whether tract is in 3/4 that stay or 1/4 that get removed
-# # Y indicates tract is 2/3 that stays
-# 
-# 
-# ##--------------------------------------------------------------------------------------
-# # write file
-# st_write(final_10_sf, dsn = "shapes/tracts_2010/", layer = "shp5_tracts10.shp", driver = "ESRI Shapefile", append = TRUE) 
+final0610_sf <- left_join(tracts10_sf,final0610)
 
+fct_count(final0610_sf$stay) ## 3/4 = Y 2052/2742 = 74.8%
+
+# write file
+st_write(final0610_sf, dsn = "shapes/tracts_2010/", layer = "shp5_tracts10.shp", driver = "ESRI Shapefile", append = TRUE)
+
+rm(tracts0610, final0610)

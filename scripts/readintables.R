@@ -26,7 +26,8 @@ dir.create("temp")
 ## API KEY
 # Set personalized API key:  https://account.ipums.org/api_keys
 # my_key <- "<YOUR KEY HERE>"
-th_ipums_key <- "59cba10d8a5da536fc06b59d8031efa0c98041799e9f5851f059782f"
+my_ipums_key <- "<YOUR KEY HERE>"
+# my_ipums_key <- "59cba10d8a5da536fc06b59d8031efa0c98041799e9f5851f059782f"
 
 #########################################################
 ## LOAD HU & YSB TABLES                                ##
@@ -34,13 +35,13 @@ th_ipums_key <- "59cba10d8a5da536fc06b59d8031efa0c98041799e9f5851f059782f"
 
 # Check out available datasets
 url <- "https://api.ipums.org/metadata/nhgis/datasets?version=v1"
-result <- GET(url, add_headers(Authorization = th_ipums_key))
+result <- GET(url, add_headers(Authorization = my_ipums_key))
 res_df <- content(result, "parsed", simplifyDataFrame = TRUE)
 View(res_df)
 
 # Look at single year (1980) example
 url <- "https://api.ipums.org/metadata/nhgis/datasets/1980_STF3/data_tables/NT109A?version=v1"
-result <- GET(url, add_headers(Authorization = th_ipums_key))
+result <- GET(url, add_headers(Authorization = my_ipums_key))
 res_df <- content(result, "parsed", simplifyDataFrame = TRUE)
 head(res_df, 20L)
 
@@ -103,7 +104,7 @@ mybody <- '
 
 ## Request data extract from NHGIS
 mybody_json <- fromJSON(mybody, simplifyVector = FALSE)
-result <- POST(url, add_headers(Authorization = th_ipums_key), body = mybody_json, encode = "json", verbose())
+result <- POST(url, add_headers(Authorization = my_ipums_key), body = mybody_json, encode = "json", verbose())
 res_df <- content(result, "parsed", simplifyDataFrame = TRUE)
 my_number <- res_df$number
 my_number
@@ -115,7 +116,7 @@ my_number
 
 ## Import Extract when it's ready
 csv_url <- paste0("https://api.ipums.org/extracts/", my_number, "?product=nhgis&version=v1")
-data_extract_status_res <- GET(csv_url, add_headers(Authorization = th_ipums_key))
+data_extract_status_res <- GET(csv_url, add_headers(Authorization = my_ipums_key))
 des_df <- content(data_extract_status_res, "parsed", simplifyDataFrame = TRUE)
 des_df$download_links
 
@@ -126,7 +127,7 @@ zip_file <- "temp/NHGIS_tables.zip"
 download.file(
   url = des_df$download_links$table_data, 
   destfile = zip_file, 
-  headers = c(Authorization = th_ipums_key)
+  headers = c(Authorization = my_ipums_key)
 )
 
 # List extract files in ZIP archive

@@ -7,8 +7,25 @@
 #########################################################################
 #########################################################################
 
-## PREPARE WORKSPACE
-source("scripts/00_preamble.R")
+## Load or install packages
+packages <- function(x) {
+  x <- deparse(substitute(x))
+  installed_packages <- as.character(installed.packages()[, 1])
+  
+  if (length(intersect(x, installed_packages)) == 0) {
+    install.packages(pkgs = x, dependencies = TRUE, repos = "http://cran.r-project.org")
+  }
+  
+  library(x, character.only = TRUE)
+  rm(installed_packages) # Remove From Workspace
+}
+
+packages(tidyverse)
+packages(httr)  # for NHGIS API
+packages(jsonlite)  # for NHGIS API
+packages(ipumsr)  # for NHGIS tables
+packages(tidycensus)  # for getting state/county names/abbrevs.
+
 
 ## Check Workspace
 getwd()  # D:/HIST_HU_URB
@@ -25,9 +42,7 @@ dir.create("temp")
 
 ## API KEY
 # Set personalized API key:  https://account.ipums.org/api_keys
-# my_key <- "<YOUR KEY HERE>"
 my_ipums_key <- "<YOUR KEY HERE>"
-# my_ipums_key <- "59cba10d8a5da536fc06b59d8031efa0c98041799e9f5851f059782f"
 
 #########################################################
 ## LOAD HU & YSB TABLES                                ##
@@ -273,21 +288,3 @@ ts_2010  <- ct10ts_table %>%
 write_csv(ts_2010, "tables/tracts_ts2010.csv")
 
 
-
-
-# ##--------------------------------------------------------------------------------------
-# # Hammer Estimates
-# tracts_ham_est <- tracts_2019_county %>%
-#   group_by(COUNTYA) %>%
-#   mutate(
-#     j90 = sum(AL0DE006, AL0DE007, AL0DE008, AL0DE009, AL0DE010, AL0DE011), # sum of housing units built before 1989 in county j
-#     i90 = (AL0DE006 + AL0DE007 + AL0DE008 + AL0DE009 + AL0DE010 + AL0DE011), # housing units built before 1989 in tract i in county j
-#     hmadj = (hu1990_cnty/j90),
-#     ham_est90 = (hu1990_cnty/j90) * i90,
-#     j00 = sum(AL0DE005, AL0DE006, AL0DE007, AL0DE008, AL0DE009, AL0DE010, AL0DE011), # housing units built before 1999 inin county j
-#     i00 = (AL0DE005 + AL0DE006 + AL0DE007 + AL0DE008 + AL0DE009 + AL0DE010 + AL0DE011),# housing units built before 1999 in tract i in county j
-#     hamadj00 = (hu2000_cnty/j00),
-#     ham_est00 = (hu2000_cnty/j00) * i00
-#   ) %>%
-#   ungroup() %>%
-#   select(GISJOIN, HU2015_19, HU2006_10, hu1990_10ts, hu2000_10ts, hu1990_cnty, hu2000_cnty, ham_est90, ham_est00)

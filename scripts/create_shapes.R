@@ -12,8 +12,9 @@ library(tigris)
 options(tigris_use_cache = TRUE)
 options(tigris_class = 'sf')
 library(sf)
-# my_acs_key <- '45544f0d114cfaa037a5566745d18bb8d4778cfa'
-# my_acs_key <- 'YOUR KEY HERE'
+
+## API KEY - use census api key: https://api.census.gov/data/key_signup.html
+my_acs_key <- 'YOUR KEY HERE'
 
 # county fips for NHGIS and Census Data Formats for nine  counties included in validation
 county_fips <- c("G2200710", "G2601630", "G2905100",  # decline: Orleans Parish(G2200710), Wayne County (G2601630), St. Louis city (G2905100),

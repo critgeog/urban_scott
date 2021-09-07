@@ -102,20 +102,8 @@ mybody <- '
   }
 '
   
-# # # Pull in Year Structure Built for Block group level
-# # url <- "https://api.ipums.org/extracts/?product=nhgis&version=v1"
-# mybody <- '
-#   {
-#     "datasets": {
-#     "2015_2019_ACS5a": {
-#     "data_tables": ["B25034"],
-#     "geog_levels": ["group"]
-#         }
-#       },
-#     "data_format": "csv_no_header",
-#     "breakdown_and_data_type_layout": "single_file"
-#   }
-#   '
+
+## All Block Group Data in 'create_shapes.R' file
 
 ## Request data extract from NHGIS
 mybody_json <- fromJSON(mybody, simplifyVector = FALSE)

@@ -169,11 +169,62 @@ rm(remove_tracts_1990, cts90, tracts90, tracts90_sf, final90)
 ##--------------------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------
 # shape 4
+# use tigris and tidycensus for Block Group spatial file
 
+# tidycensus variables for Year Structure Built, 2015-19 ACS
+my_vars <- c("B25034_001","B25034_002","B25034_003","B25034_004","B25034_005",":B25034_006","B25034_007","B25034_008","B25034_009","B25034_010","B25034_011")
 
+# read in block group data
+ysb19bg <- map_dfr(
+  state_codes,
+  ~ get_acs(
+    geography = "block group",
+    variables = my_vars,
+    state = .,
+    year = 2019,
+    survey = "acs5",
+    geometry = FALSE,
+    key = my_acs_key,
+    output = 'wide'
+  )
+)
 
+# clean data table
+final10_bg <- ysb19bg %>%
+  select(-(ends_with("M"))) %>% # remove MOE columns 
+  mutate(county_fips = str_sub(GEOID,1,5), # create a county fips column
+         GISJOIN = paste0("G",str_sub(GEOID,1,2),0,str_sub(GEOID,3,5),0,str_sub(GEOID,6,12)), # create GISJOIN to match NHGIS codes
+         HU2010 = rowSums(.[,6:12]), # sum of YSB 1939...YSB 2009
+         HU2000 = rowSums(.[,7:12]), # sum of YSB 1939...YSB 1999
+         HU1990 = rowSums(.[,8:12])) %>% # sum of YSB 1939...YSB 1989
+  filter(county_fips %in% acs_county_fips) %>% # filter dataset to counties used in validation
+  rename(HU2015_19 = B25034_001E) %>% # rename 2015-19 ACS Housing Units variable
+  select(GISJOIN, HU2015_19, HU2010, HU2000, HU1990) # select final columns for dataset
 
+# pull in census tracts from tigris for nine states included in validation (sf can't read rbind() in tidycensus call above)
+bgs10 <- map_dfr(
+  state_codes,
+  ~block_groups(
+    state = .x,
+    cb = TRUE,
+    year = 2018
+  )
+)
 
+# clean spatial file; create GISJOIN
+bgs10_sf <- bgs10 %>%
+  unite(COUNTYFIPS, STATEFP, COUNTYFP, sep = "", remove = FALSE) %>%
+  filter(COUNTYFIPS %in% acs_county_fips) %>%
+  mutate(GISJOIN = paste0("G",STATEFP,0,COUNTYFP,0,TRACTCE,BLKGRPCE )) %>%
+  select(GISJOIN)
+
+# join spatial to data table
+final10bg_sf <- left_join(bgs10_sf,final10_bg, by = "GISJOIN")
+
+# write shapefile
+st_write(final10bg_sf, dsn = "gis_files/bgroups_2010", layer = "shp4_bgs10.shp", driver = "ESRI Shapefile", append = FALSE) # , append = FALSE
+
+rm(bgs10, bgs10_sf, final10_bg, ysb19bg)
 ##--------------------------------------------------------------------------------------
 ##--------------------------------------------------------------------------------------
 # shape 5
@@ -188,4 +239,4 @@ fct_count(final0610_sf$stay) ## 3/4 = Y 2052/2742 = 74.8%
 # write file
 st_write(final0610_sf, dsn = "gis_files/tracts_2010/", layer = "shp5_tracts10.shp", driver = "ESRI Shapefile", append = TRUE)
 
-rm(tracts0610, final0610)
+rm(tracts0610, final0610, remove_tracts_2010, tracts10_sf)
